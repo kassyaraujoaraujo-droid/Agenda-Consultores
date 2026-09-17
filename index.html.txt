@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agenda de Plantões e Abordagens</title>
+    <!-- Tailwind CSS para um design limpo e responsivo -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome para ícones -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-100 font-sans leading-normal tracking-normal">
+
+    <div class="container mx-auto p-4 max-w-5xl">
+        <!-- Cabeçalho -->
+        <header class="bg-blue-600 text-white p-6 rounded-lg shadow-md mb-6 flex justify-between items-center">
+            <div>
+                <h1 class="text-2xl font-bold"><i class="fa-solid fa-calendar-days mr-2"></i> Gestão de Plantões & Abordagens</h1>
+                <p class="text-blue-100 text-sm">Controle de horários e prospecção de clientes</p>
+            </div>
+            <div class="flex gap-2">
+                <button onclick="mudarAba('abordagens')" id="btnAbordagens" class="bg-white text-blue-600 px-4 py-2 rounded font-semibold transition shadow">Abordagens</button>
+                <button onclick="mudarAba('plantoes')" id="btnPlantoes" class="bg-blue-700 text-white px-4 py-2 rounded font-semibold transition shadow">Plantões</button>
+            </div>
+        </header>
+
+        <!-- ABA DE ABORDAGENS -->
+        <section id="secaoAbordagens" class="space-y-6">
+            <!-- Formulário de Cadastro -->
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h2 class="text-lg font-bold text-gray-700 mb-4"><i class="fa-solid fa-user-plus mr-2 text-blue-600"></i> Registrar Nova Abordagem</h2>
+                <form id="formAbordagem" onsubmit="salvarAbordagem(event)" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-gray-600 text-sm font-semibold mb-1">Nome do Cliente</label>
+                        <input type="text" id="nomeCliente" required class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Ex: João Silva">
+                    </div>
+                    <div>
+                        <label class="block text-gray-600 text-sm font-semibold mb-1">Telefone / WhatsApp</label>
+                        <input type="text" id="telCliente" required class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="(19) 99999-9999">
+                    </div>
+                    <div>
+                        <label class="block text-gray-600 text-sm font-semibold mb-1">Bloco / Apto</label>
+                        <input type="text" id="blocoApto" required class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Ex: Bloco A, Apto 204">
+                    </div>
+                    <div>
+                        <label class="block text-gray-600 text-sm font-semibold mb-1">Operadora Atual</label>
+                        <select id="operadoraAtual" required class="w-full border rounded px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="">Selecione...</option>
+                            <option value="Claro">Claro</option>
+                            <option value="Vivo">Vivo</option>
+                            <option value="TIM">TIM</option>
+                            <option value="Oi">Oi</option>
+                            <option value="Outra / Nenhuma">Outra / Nenhuma</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-gray-600 text-sm font-semibold mb-1">Consultor Responsável</label>
+                        <input type="text" id="consultorNome" required class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Seu Nome">
+                    </div>
+                    <div class="flex items-end">
+                        <button type="submit" class="w-full bg-blue-600 text-white font-semibold py-2 rounded hover:bg-blue-700 transition"><i class="fa-solid fa-check mr-1"></i> Salvar Abordagem</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Listagem de Abordagens -->
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-lg font-bold text-gray-700"><i class="fa-solid fa-address-book mr-2 text-blue-600"></i> Clientes Abordados</h2>
+                    <span id="contadorAbordagens" class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">0 registros</span>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-gray-100 text-gray-600 text-sm uppercase">
+                                <th class="p-3">Data/Hora</th>
+                                <th class="p-3">Cliente</th>
+                                <th class="p-3">Telefone</th>
+                                <th class="p-3">Bloco/Apto</th>
+                                <th class="p-3">Operadora</th>
+                                <th class="p-3">Consultor</th>
+                                <th class="p-3 text-center">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabelaAbordagens" class="text-gray-700 text-sm divide-y divide-gray-200">
+                            <!-- Preenchido via JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ABA DE PLANTÕES -->
+        <section id="secaoPlantoes" class="hidden space-y-6">
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h2 class="text-lg font-bold text-gray-700 mb-4"><i class="fa-solid fa-clock mr-2 text-blue-600"></i> Agendar Plantão</h2>
+                <form id="formPlantao" onsubmit="salvarPlantao(event)" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div>
+                        <label class="block text-gray-600 text-sm font-semibold mb-1">Consultor</label>
+                        <input type="text" id="plantaoConsultor" required class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Nome do Consultor">
+                    </div>
+                    <div>
+                        <label class="block text-gray-600 text-sm font-semibold mb-1">Data</label>
+                        <input type="date" id="plantaoData" required class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-gray-600 text-sm font-semibold mb-1">Horário</label>
+                        <select id="plantaoTurno" required class="w-full border rounded px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="Manhã (08h - 12h)">Manhã (08h - 12h)</option>
+                            <option value="Tarde (13h - 17h)">Tarde (13h - 17h)</option>
+                            <option value="Integral (08h - 17h)">Integral (08h - 17h)</option>
+                        </select>
+                    </div>
+                    <div class="flex items-end">
+                        <button type="submit" class="w-full bg-green-600 text-white font-semibold py-2 rounded hover:bg-green-700 transition"><i class="fa-solid fa-calendar-plus mr-1"></i> Reservar Plantão</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Listagem de Plantões -->
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h2 class="text-lg font-bold text-gray-700 mb-4"><i class="fa-solid fa-list-check mr-2 text-green-600"></i> Escala de Plantões</h2>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-gray-100 text-gray-600 text-sm uppercase">
+                                <th class="p-3">Data</th>
+                                <th class="p-3">Consultor</th>
+                                <th class="p-3">Turno</th>
+                                <th class="p-3 text-center">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabelaPlantoes" class="text-gray-700 text-sm divide-y divide-gray-200">
+                            <!-- Preenchido via JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Script de Funcionalidades -->
+    <script>
+        function mudarAba(aba) {
+            const secAbordagens = document.getElementById('secaoAbordagens');
+            const secPlantoes = document.getElementById('secaoPlantoes');
+            const btnAbordagens = document.getElementById('btnAbordagens');
+            const btnPlantoes = document.getElementById('btnPlantoes');
+
+            if (aba === 'abordagens') {
+                secAbordagens.classList.remove('hidden');
+                secPlantoes.classList.add('hidden');
+                btnAbordagens.className = "bg-white text-blue-600 px-4 py-2 rounded font-semibold transition shadow";
+                btnPlantoes.className = "bg-blue-700 text-white px-4 py-2 rounded font-semibold transition shadow";
+            } else {
+                secPlantoes.classList.remove('hidden');
+                secAbordagens.classList.add('hidden');
+                btnPlantoes.className = "bg-white text-blue-600 px-4 py-2 rounded font-semibold transition shadow";
+                btnAbordagens.className = "bg-blue-700 text-white px-4 py-2 rounded font-semibold transition shadow";
+            }
+        }
+
+        let abordagens = JSON.parse(localStorage.getItem('abordagens')) || [];
+        let plantoes = JSON.parse(localStorage.getItem('plantoes')) || [];
+
+        function salvarAbordagem(e) {
+            e.preventDefault();
+            const novaAbordagem = {
+                id: Date.now(),
+                data: new Date().toLocaleDateString('pt-BR') + ' ' + new Date().toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'}),
+                nome: document.getElementById('nomeCliente').value,
+                telefone: document.getElementById('telCliente').value,
+                bloco: document.getElementById('blocoApto').value,
+                operadora: document.getElementById('operadoraAtual').value,
+                consultor: document.getElementById('consultorNome').value
+            };
+
+            abordagens.unshift(novaAbordagem);
+            localStorage.setItem('abordagens', JSON.stringify(abordagens));
+            document.getElementById('formAbordagem').reset();
+            renderizarAbordagens();
+        }
+
+        function renderizarAbordagens() {
+            const tbody = document.getElementById('tabelaAbordagens');
+            const contador = document.getElementById('contadorAbordagens');
+            tbody.innerHTML = '';
+            contador.innerText = `${abordagens.length} registros`;
+
+            if (abordagens.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-gray-400">Nenhuma abordagem registrada ainda.</td></tr>`;
+                return;
+            }
+
+            abordagens.forEach(item => {
+                tbody.innerHTML += `
+                    <tr class="hover:bg-gray-50">
+                        <td class="p-3 text-xs text-gray-500">${item.data}</td>
+                        <td class="p-3 font-medium text-gray-800">${item.nome}</td>
+                        <td class="p-3"><a href="https://wa.me/55${item.telefone.replace(/\D/g,'')}" target="_blank" class="text-green-600 hover:underline"><i class="fa-brands fa-whatsapp"></i> ${item.telefone}</a></td>
+                        <td class="p-3">${item.bloco}</td>
+                        <td class="p-3"><span class="bg-gray-200 text-gray-700 px-2 py-0.5 rounded text-xs font-semibold">${item.operadora}</span></td>
+                        <td class="p-3 text-gray-600">${item.consultor}</td>
+                        <td class="p-3 text-center">
+                            <button onclick="excluirAbordagem(${item.id})" class="text-red-500 hover:text-red-700"><i class="fa-solid fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function excluirAbordagem(id) {
+            if (confirm('Deseja realmente excluir este registro?')) {
+                abordagens = abordagens.filter(i => i.id !== id);
+                localStorage.setItem('abordagens', JSON.stringify(abordagens));
+                renderizarAbordagens();
+            }
+        }
+
+        function salvarPlantao(e) {
+            e.preventDefault();
+            const novoPlantao = {
+                id: Date.now(),
+                consultor: document.getElementById('plantaoConsultor').value,
+                data: document.getElementById('plantaoData').value.split('-').reverse().join('/'),
+                turno: document.getElementById('plantaoTurno').value
+            };
+
+            plantoes.push(novoPlantao);
+            localStorage.setItem('plantoes', JSON.stringify(plantoes));
+            document.getElementById('formPlantao').reset();
+            renderizarPlantoes();
+        }
+
+        function renderizarPlantoes() {
+            const tbody = document.getElementById('tabelaPlantoes');
+            tbody.innerHTML = '';
+
+            if (plantoes.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-gray-400">Nenhum plantão agendado.</td></tr>`;
+                return;
+            }
+
+            plantoes.push // wait, error check syntax fixed below
+            plantoes.forEach(item => {
+                tbody.innerHTML += `
+                    <tr class="hover:bg-gray-50">
+                        <td class="p-3 font-medium text-gray-800">${item.data}</td>
+                        <td class="p-3">${item.consultor}</td>
+                        <td class="p-3"><span class="bg-blue-100 text-blue-800 px-2 py-0.5 rounded text-xs font-semibold">${item.turno}</span></td>
+                        <td class="p-3 text-center">
+                            <button onclick="excluirPlantao(${item.id})" class="text-red-500 hover:text-red-700"><i class="fa-solid fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function excluirPlantao(id) {
+            if (confirm('Deseja realmente cancelar este plantão?')) {
+                plantoes = plantoes.filter(i => i.id !== id);
+                localStorage.setItem('plantoes', JSON.stringify(plantoes));
+                renderizarPlantoes();
+            }
+        }
+
+        renderizarAbordagens();
+        renderizarPlantoes();
+    </script>
+</body>
+</html>
